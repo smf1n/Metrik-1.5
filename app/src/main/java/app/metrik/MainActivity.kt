@@ -3,16 +3,19 @@ package app.metrik
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import app.metrik.ui.*
 
 class MainActivity : ComponentActivity() {
 
@@ -20,43 +23,79 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+            val context = LocalContext.current
+
+            // Тема из настроек
+            var currentTheme by remember { mutableStateOf(ThemeChoice.current) }
+
+            MetrikTheme(theme = currentTheme) {
+                val colors = LocalMetrikColors.current
+
+                // Навигация
+                var screen by remember { mutableStateOf("home") }
+                val drawerState = rememberDrawerState(DrawerValue.Closed)
+                val scope = rememberCoroutineScope()
+
+                ModalNavigationDrawer(
+                    drawerState = drawerState,
+                    drawerContent = {
+                        ModalDrawerSheet(
+                            drawerContainerColor = colors.background
+                        ) {
+                            DrawerContent(
+                                onNavigate = { route ->
+                                    screen = route
+                                    scope.launch { drawerState.close() }
+                                }
+                            )
+                        }
+                    }
                 ) {
-                    PlaceholderScreen()
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = colors.background
+                    ) {
+                        when (screen) {
+                            "home" -> MainScreen(
+                                onOpenDrawer = {
+                                    scope.launch { drawerState.open() }
+                                },
+                                onStartBench = {
+                                    screen = "bench"
+                                }
+                            )
+
+                            "bench" -> BenchScreen(
+                                onBack = { screen = "home" }
+                            )
+
+                            "history" -> HistoryScreen(
+                                onBack = { screen = "home" }
+                            )
+
+                            "settings" -> SettingsScreen(
+                                onBack = {
+                                    currentTheme = ThemeChoice.current
+                                    screen = "home"
+                                }
+                            )
+
+                            "about" -> AboutScreen(
+                                onBack = { screen = "home" }
+                            )
+
+                            else -> MainScreen(
+                                onOpenDrawer = {
+                                    scope.launch { drawerState.open() }
+                                },
+                                onStartBench = {
+                                    screen = "bench"
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun PlaceholderScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Metrik",
-            fontSize = 48.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        Text(
-            text = "Phone Benchmark",
-            fontSize = 16.sp
-        )
-
-        Spacer(Modifier.height(32.dp))
-
-        Text(
-            text = "v1.5.0",
-            fontSize = 12.sp
-        )
     }
 }
