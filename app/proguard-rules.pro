@@ -1,0 +1,3 @@
+-keep class app.metrik.** { *; }
+-dontwarn kotlin.**
+-dontwarn androidx.**
