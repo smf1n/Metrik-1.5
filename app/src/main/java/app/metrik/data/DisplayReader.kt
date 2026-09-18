@@ -4,6 +4,7 @@ import android.content.Context
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.util.DisplayMetrics
+import android.view.Display
 import android.view.WindowManager
 import java.util.Locale
 
@@ -54,7 +55,7 @@ object DisplayReader {
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val dm = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-                val display = dm.getDisplay(DisplayManager.DEFAULT_DISPLAY)
+                val display = dm.getDisplay(Display.DEFAULT_DISPLAY)
                 display?.refreshRate ?: 60f
             } else {
                 @Suppress("DEPRECATION")
