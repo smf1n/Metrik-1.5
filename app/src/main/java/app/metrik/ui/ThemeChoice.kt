@@ -7,23 +7,23 @@ import androidx.compose.runtime.setValue
 
 /**
  * Хранит текущий выбор темы.
- * Простой Singleton — не использует DataStore, чтобы не тянуть зависимости.
  */
 object ThemeChoice {
 
     private const val PREFS_NAME = "metrik_prefs"
     private const val KEY_THEME = "theme"
 
-    var current by mutableStateOf(MetrikTheme.AMOLED)
+    // CARBON — дефолтная тема
+    var current by mutableStateOf(MetrikTheme.CARBON)
         private set
 
     fun init(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val saved = prefs.getString(KEY_THEME, MetrikTheme.AMOLED.name)
+        val saved = prefs.getString(KEY_THEME, MetrikTheme.CARBON.name)
         current = try {
-            MetrikTheme.valueOf(saved ?: MetrikTheme.AMOLED.name)
+            MetrikTheme.valueOf(saved ?: MetrikTheme.CARBON.name)
         } catch (e: Exception) {
-            MetrikTheme.AMOLED
+            MetrikTheme.CARBON
         }
     }
 
