@@ -3,14 +3,14 @@
     <string name="app_name">Metrik</string>
     <string name="app_subtitle">Phone Benchmark</string>
 
-    <!-- Меню (drawer) -->
+    <!-- Drawer -->
     <string name="menu_home">Home</string>
     <string name="menu_bench">Benchmark</string>
     <string name="menu_history">History</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_about">About</string>
 
-    <!-- Главный экран -->
+    <!-- Main -->
     <string name="device_info">Device Information</string>
     <string name="start_bench">START</string>
     <string name="running">Running…</string>
@@ -18,7 +18,7 @@
     <string name="score">Score</string>
     <string name="total_score">Total Score</string>
 
-    <!-- Категории -->
+    <!-- Categories -->
     <string name="cat_cpu">CPU</string>
     <string name="cat_storage">Storage</string>
     <string name="cat_battery">Battery</string>
@@ -27,16 +27,18 @@
     <string name="cat_display">Display</string>
     <string name="cat_system">System</string>
 
-    <!-- Тесты -->
+    <!-- Tests -->
     <string name="test_aes_single">AES single-core</string>
     <string name="test_aes_multi">AES multi-core</string>
     <string name="test_storage">Storage</string>
     <string name="test_calculating">Calculating…</string>
     <string name="test_done">Done</string>
 
-    <!-- Настройки -->
+    <!-- Settings -->
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
+    <string name="settings_theme_carbon">Metrik Carbon</string>
+    <string name="settings_theme_carbon_desc">Graphite + cyan → lime gradient</string>
     <string name="settings_theme_amoled">AMOLED</string>
     <string name="settings_theme_smf1n">SM-F1N</string>
     <string name="settings_theme_white">White</string>
@@ -44,58 +46,59 @@
     <string name="settings_theme_smf1n_desc">Dark blue with gradient</string>
     <string name="settings_theme_white_desc">Light — for weak devices</string>
 
-    <!-- История -->
+    <!-- History -->
     <string name="history_title">History</string>
     <string name="history_empty">No results yet</string>
     <string name="history_empty_hint">Run a benchmark to see it here</string>
+    <string name="history_run">Run Benchmark</string>
     <string name="history_clear">Clear all</string>
 
-    <!-- О приложении -->
+    <!-- About -->
     <string name="about_title">About</string>
     <string name="about_version">Version</string>
-    <string name="about_what">📊 What is this</string>
-    <string name="about_what_text">Metrik is a fair Android benchmark. It shows real physical values (encryption speed, disk speed, temperatures) and calculates a total score out of 7000.</string>
-    <string name="about_scoring">🧮 How scores work</string>
-    <string name="about_ratings">🏆 Ratings</string>
-    <string name="about_tech">🛠 Technologies</string>
+    <string name="about_what">What is this</string>
+    <string name="about_what_text">Metrik is a fair Android benchmark. It shows real physical values (encryption speed, disk speed, temperatures) and calculates a total score out of 7 000 000.</string>
+    <string name="about_scoring">How scores work</string>
+    <string name="about_ratings">Ratings</string>
+    <string name="about_tech">Technologies</string>
     <string name="about_tech_text">• Kotlin 1.9\n• Jetpack Compose\n• AES-256 encryption\n• Real disk measurements\n• No ads\n• Open source</string>
-    <string name="about_made_with">Made with ❤️ in 2025</string>
+    <string name="about_made_with">Made with ♥ in 2026</string>
 
-    <!-- Рейтинги -->
-    <string name="rating_excellent">⭐ Excellent</string>
-    <string name="rating_very_good">✅ Very Good</string>
-    <string name="rating_good">👍 Good</string>
-    <string name="rating_average">🟡 Average</string>
-    <string name="rating_low">🟠 Low</string>
-    <string name="rating_very_low">🔴 Very Low</string>
+    <!-- Ratings -->
+    <string name="rating_excellent">EXCELLENT</string>
+    <string name="rating_very_good">VERY GOOD</string>
+    <string name="rating_good">GOOD</string>
+    <string name="rating_average">AVERAGE</string>
+    <string name="rating_low">LOW</string>
+    <string name="rating_very_low">VERY LOW</string>
 
-    <!-- Кнопки -->
-    <string name="btn_start">🚀 START BENCHMARK</string>
-    <string name="btn_repeat">🔄 REPEAT</string>
+    <!-- Buttons -->
+    <string name="btn_start">START BENCHMARK</string>
+    <string name="btn_repeat">REPEAT</string>
     <string name="btn_share">Share</string>
     <string name="btn_export">Export JSON</string>
     <string name="btn_copy">Copy</string>
 
-    <!-- Ошибки -->
+    <!-- Errors -->
     <string name="error">Error</string>
     <string name="error_unknown">Unknown error</string>
 
-    <!-- Живые датчики -->
-    <string name="live">🌡 Live</string>
+    <!-- Live sensors -->
+    <string name="live">Live</string>
     <string name="live_cpu_temp">CPU temp</string>
     <string name="live_battery_temp">Battery temp</string>
     <string name="live_cpu_freq">CPU freq</string>
 
-    <!-- Единицы -->
-    <string name="unit_mb_s">МБ/с</string>
-    <string name="unit_gb">ГБ</string>
-    <string name="unit_mb">МБ</string>
-    <string name="unit_kb">КБ</string>
+    <!-- Units -->
+    <string name="unit_mb_s">MB/s</string>
+    <string name="unit_gb">GB</string>
+    <string name="unit_mb">MB</string>
+    <string name="unit_kb">KB</string>
     <string name="unit_celsius">°C</string>
-    <string name="unit_voltage">В</string>
-    <string name="unit_current">мА</string>
-    <string name="unit_hz">Гц</string>
-    <string name="unit_ghz">ГГц</string>
-    <string name="unit_mhz">МГц</string>
+    <string name="unit_voltage">V</string>
+    <string name="unit_current">mA</string>
+    <string name="unit_hz">Hz</string>
+    <string name="unit_ghz">GHz</string>
+    <string name="unit_mhz">MHz</string>
     <string name="unit_percent">%</string>
 </resources>
