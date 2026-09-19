@@ -1,7 +1,9 @@
 package app.metrik.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -10,6 +12,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -61,9 +65,9 @@ fun SettingsScreen(
                 .padding(16.dp)
         ) {
 
-            // ===== Тема =====
+            // ===== Theme =====
             Text(
-                text = "🎨 Theme",
+                text = "Theme",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.accent,
@@ -71,9 +75,22 @@ fun SettingsScreen(
             )
 
             ThemeOption(
+                title = "Metrik Carbon",
+                subtitle = "Graphite + cyan → lime gradient",
+                selected = selectedTheme == MetrikTheme.CARBON,
+                previewColors = listOf(Color(0xFF0B0D0E), Color(0xFF00E5FF), Color(0xFF00FF88))
+            ) {
+                selectedTheme = MetrikTheme.CARBON
+                ThemeChoice.set(context, MetrikTheme.CARBON)
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            ThemeOption(
                 title = "AMOLED",
-                subtitle = "Чистый чёрный — экономит батарею",
-                selected = selectedTheme == MetrikTheme.AMOLED
+                subtitle = "Pure black — saves battery",
+                selected = selectedTheme == MetrikTheme.AMOLED,
+                previewColors = listOf(Color(0xFF000000), Color(0xFF4ADE80))
             ) {
                 selectedTheme = MetrikTheme.AMOLED
                 ThemeChoice.set(context, MetrikTheme.AMOLED)
@@ -83,8 +100,9 @@ fun SettingsScreen(
 
             ThemeOption(
                 title = "SM-F1N",
-                subtitle = "Тёмно-синий с градиентом",
-                selected = selectedTheme == MetrikTheme.SMF1N
+                subtitle = "Dark blue gradient",
+                selected = selectedTheme == MetrikTheme.SMF1N,
+                previewColors = listOf(Color(0xFF0A0E27), Color(0xFF4FACFE))
             ) {
                 selectedTheme = MetrikTheme.SMF1N
                 ThemeChoice.set(context, MetrikTheme.SMF1N)
@@ -94,8 +112,9 @@ fun SettingsScreen(
 
             ThemeOption(
                 title = "White",
-                subtitle = "Светлая, для слабых устройств",
-                selected = selectedTheme == MetrikTheme.WHITE
+                subtitle = "Light theme for weak devices",
+                selected = selectedTheme == MetrikTheme.WHITE,
+                previewColors = listOf(Color(0xFFF8F9FA), Color(0xFF007AFF))
             ) {
                 selectedTheme = MetrikTheme.WHITE
                 ThemeChoice.set(context, MetrikTheme.WHITE)
@@ -103,9 +122,9 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // ===== О приложении =====
+            // ===== About =====
             Text(
-                text = "ℹ️ About",
+                text = "About",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.accent,
@@ -118,8 +137,9 @@ fun SettingsScreen(
                 colors = CardDefaults.cardColors(containerColor = colors.surface)
             ) {
                 Column(Modifier.padding(16.dp)) {
-                    SettingsRow("Version", "1.5.0")
+                    SettingsRow("Version", "1.5.1")
                     SettingsRow("Build", "Metrik")
+                    SettingsRow("Max score", "7 000 000")
                     SettingsRow("Min Android", "8.0 (API 26)")
                 }
             }
@@ -134,6 +154,7 @@ private fun ThemeOption(
     title: String,
     subtitle: String,
     selected: Boolean,
+    previewColors: List<Color>,
     onClick: () -> Unit
 ) {
     val colors = LocalMetrikColors.current
@@ -159,6 +180,18 @@ private fun ThemeOption(
                     selectedColor = colors.accent,
                     unselectedColor = colors.onSurfaceVariant
                 )
+            )
+
+            Spacer(Modifier.width(8.dp))
+
+            // Превью темы — цветной кружок
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .background(
+                        brush = Brush.linearGradient(previewColors),
+                        shape = CircleShape
+                    )
             )
 
             Spacer(Modifier.width(12.dp))
