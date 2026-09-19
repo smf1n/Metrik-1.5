@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import app.metrik.bench.BenchResult
+import app.metrik.bench.Scoring
 import app.metrik.data.DeviceProfile
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.text.SimpleDateFormat
@@ -14,22 +14,16 @@ import java.util.Locale
 
 /**
  * Экспорт результатов бенчмарка в JSON-файл.
- * Можно поделиться через Share Intent.
  */
 object JsonExporter {
 
-    /**
-     * Формирует JSON-строку из результата и профиля устройства.
-     */
     fun buildJson(result: BenchResult, profile: DeviceProfile): String {
         val root = JSONObject()
 
-        // Метаданные
         root.put("app", "Metrik")
-        root.put("version", "1.5.0")
+        root.put("version", "1.5.1")
         root.put("exportedAt", System.currentTimeMillis())
 
-        // Устройство
         val device = JSONObject().apply {
             put("manufacturer", profile.manufacturer)
             put("model", profile.model)
@@ -46,7 +40,6 @@ object JsonExporter {
         }
         root.put("device", device)
 
-        // CPU
         val cpu = JSONObject().apply {
             put("soc", profile.soc)
             put("abi", profile.cpuAbi)
@@ -58,7 +51,6 @@ object JsonExporter {
         }
         root.put("cpu", cpu)
 
-        // RAM
         val ram = JSONObject().apply {
             put("totalBytes", profile.ram.total)
             put("availableBytes", profile.ram.available)
@@ -67,7 +59,6 @@ object JsonExporter {
         }
         root.put("ram", ram)
 
-        // Storage
         val storage = JSONObject().apply {
             put("totalBytes", profile.storage.total)
             put("freeBytes", profile.storage.free)
@@ -75,7 +66,6 @@ object JsonExporter {
         }
         root.put("storage", storage)
 
-        // Battery
         val battery = JSONObject().apply {
             put("level", profile.battery.level)
             put("voltageMv", profile.battery.voltage)
@@ -88,7 +78,6 @@ object JsonExporter {
         }
         root.put("battery", battery)
 
-        // Display
         val display = JSONObject().apply {
             put("width", profile.display.width)
             put("height", profile.display.height)
@@ -98,7 +87,6 @@ object JsonExporter {
         }
         root.put("display", display)
 
-        // GPU
         val gpu = JSONObject().apply {
             put("renderer", profile.gpuRenderer)
             put("vendor", profile.gpuVendor)
@@ -106,7 +94,6 @@ object JsonExporter {
         }
         root.put("gpu", gpu)
 
-        // Результат
         val bench = JSONObject().apply {
             put("aesSingleMbPerSec", result.aesSingleMbPerSec)
             put("aesMultiMbPerSec", result.aesMultiMbPerSec)
@@ -119,17 +106,15 @@ object JsonExporter {
             put("batteryScore", result.batteryScore)
             put("gpuScore", result.gpuScore)
             put("totalScore", result.totalScore)
+            put("maxTotal", Scoring.MAX_TOTAL)
             put("rating", result.rating)
             put("timestamp", result.timestamp)
         }
         root.put("benchmark", bench)
 
-        return root.toString(2)  // красивый JSON с отступами
+        return root.toString(2)
     }
 
-    /**
-     * Сохраняет JSON в файл в кэше и возвращает File.
-     */
     fun saveToFile(context: Context, json: String): File {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US)
         val fileName = "metrik_${dateFormat.format(Date())}.json"
@@ -139,9 +124,6 @@ object JsonExporter {
         return file
     }
 
-    /**
-     * Открывает системный Share Dialog с JSON-файлом.
-     */
     fun share(context: Context, file: File) {
         val uri = FileProvider.getUriForFile(
             context,
@@ -162,24 +144,20 @@ object JsonExporter {
         context.startActivity(chooser)
     }
 
-    /**
-     * Комбо: экспортировать и поделиться.
-     */
     fun exportAndShare(context: Context, result: BenchResult, profile: DeviceProfile) {
         val json = buildJson(result, profile)
         val file = saveToFile(context, json)
         share(context, file)
     }
 
-    /**
-     * Строка для копирования в буфер.
-     */
     fun buildTextSummary(result: BenchResult): String {
+        val total = Scoring.formatScore(result.totalScore)
+        val max = Scoring.formatScore(Scoring.MAX_TOTAL)
         return buildString {
-            appendLine("📊 Metrik Benchmark Result")
+            appendLine("Metrik Benchmark Result")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("Устройство: ${result.deviceName}")
-            appendLine("Балл: ${result.totalScore} / 7000")
+            appendLine("Балл: $total / $max")
             appendLine("Рейтинг: ${result.rating}")
             appendLine()
             appendLine("CPU:")
