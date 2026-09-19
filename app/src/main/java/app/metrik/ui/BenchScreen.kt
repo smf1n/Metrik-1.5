@@ -1,6 +1,6 @@
 package app.metrik.ui
 
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import app.metrik.bench.*
 import app.metrik.data.BatteryReader
 import app.metrik.data.CpuReader
+import app.metrik.util.Preferences
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,12 +38,10 @@ fun BenchScreen(
     var result by remember { mutableStateOf<BenchResult?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
 
-    // Живые данные во время теста
     var liveCpuTemp by remember { mutableStateOf(0f) }
     var liveBatteryTemp by remember { mutableStateOf(0f) }
     var liveCpuFreq by remember { mutableStateOf(0L) }
 
-    // Обновление живых данных
     LaunchedEffect(isRunning) {
         while (isRunning) {
             liveCpuTemp = CpuReader.temperature()
@@ -88,7 +87,6 @@ fun BenchScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // ===== Прогресс =====
             if (isRunning) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -124,7 +122,6 @@ fun BenchScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                // Живые датчики
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
@@ -132,7 +129,7 @@ fun BenchScreen(
                 ) {
                     Column(Modifier.padding(20.dp)) {
                         Text(
-                            text = "🌡 Live",
+                            text = "Live",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.accent
@@ -146,7 +143,6 @@ fun BenchScreen(
                 }
             }
 
-            // ===== Ошибка =====
             if (error != null) {
                 Spacer(Modifier.height(16.dp))
                 Card(
@@ -156,7 +152,7 @@ fun BenchScreen(
                 ) {
                     Column(Modifier.padding(20.dp)) {
                         Text(
-                            text = "❌ Error",
+                            text = "Error",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFFEF4444)
@@ -171,7 +167,6 @@ fun BenchScreen(
                 }
             }
 
-            // ===== Кнопка НАЧАТЬ =====
             if (!isRunning && result == null) {
                 Spacer(Modifier.height(20.dp))
 
@@ -186,18 +181,15 @@ fun BenchScreen(
                                 val startBatteryTemp = BatteryReader.temperature(context)
                                 val startCpuTemp = CpuReader.temperature()
 
-                                // === AES SINGLE ===
                                 currentStep = "AES single-core"
                                 val aesSingle = AesBench.runSingleCore { p -> progress = p / 4 }
-                                val aesSingleEnd = AesBench.runSingleCore { }  // второй замер для троттлинга
+                                val aesSingleEnd = AesBench.runSingleCore { }
 
-                                // === AES MULTI ===
                                 currentStep = "AES multi-core"
                                 val aesMulti = AesBench.runMultiCore { p ->
                                     progress = 25 + p / 4
                                 }
 
-                                // === STORAGE ===
                                 currentStep = "Storage"
                                 val stResult = StorageBench.run(context) { p ->
                                     progress = 50 + p / 2
@@ -206,13 +198,12 @@ fun BenchScreen(
                                 val endCpuTemp = CpuReader.temperature()
                                 val endBatteryTemp = BatteryReader.temperature(context)
 
-                                // === ПОДСЧЁТ ===
                                 currentStep = "Calculating…"
                                 progress = 95
 
                                 val throttling = Scoring.calculateThrottling(aesSingle, aesSingleEnd)
 
-                                result = Scoring.calculate(
+                                val finalResult = Scoring.calculate(
                                     aesSingleMbPerSec = aesSingle,
                                     aesMultiMbPerSec = aesMulti,
                                     storageWriteMbPerSec = stResult.writeMbPerSec,
@@ -228,10 +219,20 @@ fun BenchScreen(
                                     deviceModel = android.os.Build.MODEL
                                 )
 
+                                result = finalResult
+
+                                try {
+                                    Preferences.saveResult(context, finalResult)
+                                    Log.i("Metrik", "Результат сохранён в историю")
+                                } catch (e: Exception) {
+                                    Log.e("Metrik", "Не удалось сохранить результат", e)
+                                }
+
                                 progress = 100
                                 currentStep = "Done"
                                 isRunning = false
                             } catch (e: Exception) {
+                                Log.e("Metrik", "Ошибка бенчмарка", e)
                                 error = e.message ?: "Unknown error"
                                 isRunning = false
                             }
@@ -246,11 +247,10 @@ fun BenchScreen(
                         contentColor = colors.background
                     )
                 ) {
-                    Text("🚀 START BENCHMARK", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text("START BENCHMARK", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
-            // ===== РЕЗУЛЬТАТ =====
             if (result != null) {
                 Spacer(Modifier.height(20.dp))
                 ResultBlock(result!!)
@@ -268,7 +268,7 @@ fun BenchScreen(
                         contentColor = colors.background
                     )
                 ) {
-                    Text("🔄 REPEAT", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text("REPEAT", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -293,7 +293,6 @@ private fun LiveRow(label: String, value: String) {
 private fun ResultBlock(result: BenchResult) {
     val colors = LocalMetrikColors.current
 
-    // === Итоговый балл ===
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -304,7 +303,7 @@ private fun ResultBlock(result: BenchResult) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "🏆 RESULT",
+                text = "RESULT",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.accent
@@ -313,15 +312,15 @@ private fun ResultBlock(result: BenchResult) {
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "${result.totalScore}",
-                fontSize = 64.sp,
+                text = Scoring.formatScore(result.totalScore),
+                fontSize = 52.sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.accent
             )
 
             Text(
-                text = "/ ${Scoring.MAX_TOTAL}",
-                fontSize = 16.sp,
+                text = "/ ${Scoring.formatScore(Scoring.MAX_TOTAL)}",
+                fontSize = 14.sp,
                 color = colors.onSurfaceVariant
             )
 
@@ -346,11 +345,10 @@ private fun ResultBlock(result: BenchResult) {
 
     Spacer(Modifier.height(12.dp))
 
-    // === CPU ===
     CategoryCard(
-        title = "🔲 CPU",
+        title = "CPU",
         score = result.cpuScore,
-        max = 2000,
+        max = Scoring.MAX_CPU,
         rows = listOf(
             "AES single" to String.format("%.1f МБ/с", result.aesSingleMbPerSec),
             "AES multi" to String.format("%.1f МБ/с", result.aesMultiMbPerSec)
@@ -359,11 +357,10 @@ private fun ResultBlock(result: BenchResult) {
 
     Spacer(Modifier.height(12.dp))
 
-    // === Storage ===
     CategoryCard(
-        title = "💿 Storage",
+        title = "Storage",
         score = result.storageScore,
-        max = 3000,
+        max = Scoring.MAX_STORAGE,
         rows = listOf(
             "Write" to String.format("%.0f МБ/с", result.storageWriteMbPerSec),
             "Read" to String.format("%.0f МБ/с", result.storageReadMbPerSec),
@@ -373,11 +370,10 @@ private fun ResultBlock(result: BenchResult) {
 
     Spacer(Modifier.height(12.dp))
 
-    // === Battery ===
     CategoryCard(
-        title = "🔋 Battery",
+        title = "Battery",
         score = result.batteryScore,
-        max = 1000,
+        max = Scoring.MAX_BATTERY,
         rows = listOf(
             "Throttling" to String.format("%.1f%%", result.throttlingPercent),
             "CPU temp start" to String.format("%.1f°C", result.cpuTempStart),
@@ -416,8 +412,8 @@ private fun CategoryCard(
                 )
 
                 Text(
-                    text = "$score / $max  ${Scoring.categoryEmoji(score, max)}",
-                    fontSize = 14.sp,
+                    text = "${Scoring.formatScore(score)} / ${Scoring.formatScore(max)}",
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = colors.onSurface
                 )
