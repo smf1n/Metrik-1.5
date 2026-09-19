@@ -3,7 +3,6 @@ package app.metrik
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
@@ -12,7 +11,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import app.metrik.ui.*
@@ -25,13 +23,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
 
-            // Тема из настроек
             var currentTheme by remember { mutableStateOf(ThemeChoice.current) }
 
             MetrikTheme(theme = currentTheme) {
                 val colors = LocalMetrikColors.current
 
-                // Навигация
                 var screen by remember { mutableStateOf("home") }
                 val drawerState = rememberDrawerState(DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
@@ -70,7 +66,8 @@ class MainActivity : ComponentActivity() {
                             )
 
                             "history" -> HistoryScreen(
-                                onBack = { screen = "home" }
+                                onBack = { screen = "home" },
+                                onRunBench = { screen = "bench" }
                             )
 
                             "settings" -> SettingsScreen(
