@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.metrik.bench.Scoring
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +61,6 @@ fun AboutScreen(
         ) {
             Spacer(Modifier.height(20.dp))
 
-            // ===== Логотип =====
             Text(
                 text = "Metrik",
                 fontSize = 56.sp,
@@ -77,148 +77,114 @@ fun AboutScreen(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = "Version 1.5.0",
+                text = "Version 1.5.1",
                 fontSize = 12.sp,
                 color = colors.onSurfaceVariant
             )
 
             Spacer(Modifier.height(40.dp))
 
-            // ===== Описание =====
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = colors.surface)
-            ) {
-                Column(Modifier.padding(20.dp)) {
-                    Text(
-                        text = "📊 Что это",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.accent
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    Text(
-                        text = "Metrik — это честный бенчмарк для Android. " +
-                                "Он показывает реальные физические значения " +
-                                "(скорость шифрования, скорость диска, температуры) " +
-                                "и рассчитывает итоговый балл из 7000.",
-                        fontSize = 13.sp,
-                        color = colors.onSurface,
-                        lineHeight = 20.sp
-                    )
-                }
+            // ===== What is this =====
+            AboutCard(title = "What is this") {
+                Text(
+                    text = "Metrik is a fair Android benchmark. " +
+                            "It shows real physical values " +
+                            "(encryption speed, disk speed, temperatures) " +
+                            "and calculates a total score out of ${Scoring.formatScore(Scoring.MAX_TOTAL)}.",
+                    fontSize = 13.sp,
+                    color = colors.onSurface,
+                    lineHeight = 20.sp
+                )
             }
 
             Spacer(Modifier.height(12.dp))
 
-            // ===== Как считаются баллы =====
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = colors.surface)
-            ) {
-                Column(Modifier.padding(20.dp)) {
-                    Text(
-                        text = "🧮 Как считаются баллы",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.accent
-                    )
+            // ===== Scoring =====
+            AboutCard(title = "How scores work") {
+                ScoreInfoRow("AES single", "max 1 000 000", "1000 MB/s = 1 000 000")
+                ScoreInfoRow("AES multi", "max 1 000 000", "4000 MB/s = 1 000 000")
+                ScoreInfoRow("Storage write", "max 1 000 000", "1500 MB/s = 1 000 000")
+                ScoreInfoRow("Storage read", "max 1 000 000", "2500 MB/s = 1 000 000")
+                ScoreInfoRow("Storage random", "max 1 000 000", "500 MB/s = 1 000 000")
+                ScoreInfoRow("Throttling", "max 1 000 000", "0% = 1 000 000, -50% = 0")
 
-                    Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(8.dp))
 
-                    ScoreInfoRow("AES single", "макс 1000", "1000 МБ/с = 1000")
-                    ScoreInfoRow("AES multi", "макс 1000", "4000 МБ/с = 1000")
-                    ScoreInfoRow("Storage write", "макс 1000", "1500 МБ/с = 1000")
-                    ScoreInfoRow("Storage read", "макс 1000", "2500 МБ/с = 1000")
-                    ScoreInfoRow("Storage random", "макс 1000", "500 МБ/с = 1000")
-                    ScoreInfoRow("Throttling", "макс 1000", "0% = 1000, -50% = 0")
-
-                    Spacer(Modifier.height(8.dp))
-
-                    Text(
-                        text = "Максимум — 7000 баллов. Баллы не привязаны к " +
-                                "конкретному устройству, а используют физические константы.",
-                        fontSize = 12.sp,
-                        color = colors.onSurfaceVariant,
-                        lineHeight = 18.sp
-                    )
-                }
+                Text(
+                    text = "Maximum — ${Scoring.formatScore(Scoring.MAX_TOTAL)} points. " +
+                            "Scores are based on physical constants, not on a specific device.",
+                    fontSize = 12.sp,
+                    color = colors.onSurfaceVariant,
+                    lineHeight = 18.sp
+                )
             }
 
             Spacer(Modifier.height(12.dp))
 
-            // ===== Рейтинги =====
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = colors.surface)
-            ) {
-                Column(Modifier.padding(20.dp)) {
-                    Text(
-                        text = "🏆 Рейтинги",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.accent
-                    )
-
-                    Spacer(Modifier.height(12.dp))
-
-                    ScoreInfoRow("⭐ Excellent", "6000+", "")
-                    ScoreInfoRow("✅ Very Good", "4500+", "")
-                    ScoreInfoRow("👍 Good", "3000+", "")
-                    ScoreInfoRow("🟡 Average", "1800+", "")
-                    ScoreInfoRow("🟠 Low", "800+", "")
-                    ScoreInfoRow("🔴 Very Low", "0+", "")
-                }
+            // ===== Ratings =====
+            AboutCard(title = "Ratings") {
+                ScoreInfoRow("EXCELLENT", "6 000 000+", "")
+                ScoreInfoRow("VERY GOOD", "4 500 000+", "")
+                ScoreInfoRow("GOOD", "3 000 000+", "")
+                ScoreInfoRow("AVERAGE", "1 800 000+", "")
+                ScoreInfoRow("LOW", "800 000+", "")
+                ScoreInfoRow("VERY LOW", "0+", "")
             }
 
             Spacer(Modifier.height(12.dp))
 
-            // ===== Технологии =====
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = colors.surface)
-            ) {
-                Column(Modifier.padding(20.dp)) {
-                    Text(
-                        text = "🛠 Технологии",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.accent
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    Text(
-                        text = "• Kotlin 1.9\n" +
-                                "• Jetpack Compose\n" +
-                                "• AES-256 шифрование\n" +
-                                "• Реальные замеры диска\n" +
-                                "• Без рекламы\n" +
-                                "• Открытый исходный код",
-                        fontSize = 13.sp,
-                        color = colors.onSurface,
-                        lineHeight = 22.sp
-                    )
-                }
+            // ===== Tech =====
+            AboutCard(title = "Technologies") {
+                Text(
+                    text = "• Kotlin 1.9\n" +
+                            "• Jetpack Compose\n" +
+                            "• AES-256 encryption\n" +
+                            "• Real disk measurements\n" +
+                            "• No ads\n" +
+                            "• Open source",
+                    fontSize = 13.sp,
+                    color = colors.onSurface,
+                    lineHeight = 22.sp
+                )
             }
 
             Spacer(Modifier.height(40.dp))
 
-            // ===== Подпись =====
             Text(
-                text = "Made with ❤️ in 2025",
+                text = "Made with ♥ in 2026",
                 fontSize = 12.sp,
                 color = colors.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
             Spacer(Modifier.height(40.dp))
+        }
+    }
+}
+
+@Composable
+private fun AboutCard(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    val colors = LocalMetrikColors.current
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = colors.surface)
+    ) {
+        Column(Modifier.padding(20.dp)) {
+            Text(
+                text = title,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = colors.accent
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            content()
         }
     }
 }
