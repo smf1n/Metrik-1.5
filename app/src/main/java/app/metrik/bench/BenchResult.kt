@@ -5,7 +5,7 @@ package app.metrik.bench
  *
  * Содержит:
  * - реальные физические значения (МБ/с, °C, мА)
- * - нормализованный балл (S23 = 10 000)
+ * - нормализованный балл (макс 7 000 000)
  * - разбивку по категориям
  */
 data class BenchResult(
@@ -22,12 +22,12 @@ data class BenchResult(
     val throttlingPercent: Float = 0f,
     val durationMs: Long = 0,
 
-    // ===== Баллы (нормализованные, S23 = 10 000) =====
-    val cpuScore: Int = 0,        // макс 4000
-    val storageScore: Int = 0,    // макс 3000
-    val batteryScore: Int = 0,    // макс 2000
-    val gpuScore: Int = 0,        // макс 1000
-    val totalScore: Int = 0,      // макс 10000
+    // ===== Баллы =====
+    val cpuScore: Int = 0,        // макс 2 000 000
+    val storageScore: Int = 0,    // макс 3 000 000
+    val batteryScore: Int = 0,    // макс 1 000 000
+    val gpuScore: Int = 0,        // макс 1 000 000
+    val totalScore: Int = 0,      // макс 7 000 000
 
     // ===== Рейтинг =====
     val rating: String = "",
@@ -36,15 +36,11 @@ data class BenchResult(
     val deviceModel: String = ""
 ) {
 
-    /**
-     * Троттлинг: падение производительности от нагрева.
-     * Считается как (AES single в конце теста) / (AES single в начале).
-     */
     fun hasThrottling(): Boolean = throttlingPercent < -3f
 
     fun summary(): String {
         return buildString {
-            append("$totalScore / 10000")
+            append("${Scoring.formatScore(totalScore)} / ${Scoring.formatScore(Scoring.MAX_TOTAL)}")
             if (rating.isNotEmpty()) append(" · $rating")
         }
     }
