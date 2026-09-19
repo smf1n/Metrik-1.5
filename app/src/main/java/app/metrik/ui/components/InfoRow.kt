@@ -8,15 +8,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.metrik.ui.LocalMetrikColors
+import app.metrik.ui.MetrikTypography
 
 /**
  * Одна строка "label — значение".
- * Используется внутри InfoCard.
+ * Значение в monospace, чтобы числа не "прыгали".
  */
 @Composable
 fun InfoRow(
@@ -35,14 +34,13 @@ fun InfoRow(
     ) {
         Text(
             text = label,
-            fontSize = 13.sp,
+            style = MetrikTypography.label(13),
             color = colors.onSurfaceVariant
         )
 
         Text(
             text = value,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
+            style = MetrikTypography.value(13),
             color = colors.onSurface,
             textAlign = TextAlign.End
         )
